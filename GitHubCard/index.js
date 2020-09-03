@@ -27,7 +27,7 @@
     Using that array, iterate over it, requesting data for each user, creating a new card for each
     user, and adding that card to the DOM.
 */
-
+import axios from 'axios';
 const followersArray = [];
 
 /*
@@ -49,7 +49,55 @@ const followersArray = [];
       </div>
     </div>
 */
+const entryPoint = document.querySelector('.cards');
 
+function githubCardMaker(cardData) {
+  // instantiating the elements
+  const card = document.createElement('div')
+  const image = document.createElement('img')
+  const cardinfo = document.createElement('div')
+
+  // withing card-info
+
+  const nameElement = document.createElement('h3')
+  const usernameElement = document.createElement('p')
+  const locationElement = document.createElement('p')
+  const profileElement = document.createElement('p')
+  const profileLinkElement = document.createElement('a')
+  const followersElement = document.createElement('p')
+  const followingElement = document.createElement('p')
+  const bioElement = document.createElement('p')
+  
+  profileElement.textContent = 'Profile: '
+  profileElement.appendChild(profileLinkElement)
+  image.setAttribute('src', cardData.avatar_url)
+  profileLinkElement.setAttribute('href', cardData.html_url);
+  profileLinkElement.textContent = cardData.html_url;
+  nameElement.textContent = cardData.name
+  usernameElement.textContent = cardData.login
+  locationElement.textContent = 'Location: ' + cardData.location
+  followersElement.textContent = 'Followers: ' + cardData.followers
+  followingElement.textContent = 'Following: ' + cardData.following
+  bioElement.textContent = 'Bio: ' + cardData.bio
+  card.classList.add('card')
+  cardinfo.classList.add('card-info');
+  nameElement.classList.add('name');
+  usernameElement.classList.add('username')
+  // creating the hierarchy
+  card.appendChild(image)
+  card.appendChild(cardinfo)
+  cardinfo.appendChild(nameElement)
+  cardinfo.appendChild(usernameElement)
+  cardinfo.appendChild(locationElement)
+  cardinfo.appendChild(profileElement)
+  cardinfo.appendChild(followersElement)
+  cardinfo.appendChild(followingElement)
+  cardinfo.appendChild(bioElement)
+  // adding some interactivity
+
+  // never forget to return!
+  return card
+}
 /*
   List of LS Instructors Github username's:
     tetondan
@@ -58,3 +106,18 @@ const followersArray = [];
     luishrd
     bigknell
 */
+
+const userArray = ['c1oneman' ,'tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+userArray.forEach(username => {
+  axios.get(`https://api.github.com/users/${username}`)
+  .then(json => {
+    console.log('response body axios puts in "data" property', json.data)
+    const userCard = githubCardMaker(json.data)
+    entryPoint.appendChild(userCard)
+  })
+  .catch(err => {
+    console.log(err)
+    debugger
+  })
+  
+})
